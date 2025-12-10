@@ -7,7 +7,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./db_data:/var/lib/postgresql/data
+      - ./volumes/database:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: postgrespassword
       POSTGRES_DB: shop
@@ -40,7 +40,7 @@ services:
       - mimir
 
   postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:v0.15.0
+    image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: postgres-exporter
     ports:
       - 9187:9187
@@ -65,8 +65,8 @@ services:
       - MINIO_ROOT_USER=mimir
       - MINIO_ROOT_PASSWORD=supersecret
     volumes:
-      - ./minio-data:/data
-      - ./minio-init.sh:/init.sh:ro
+      - ./volumes/minio-data:/data
+      - ./minio/init.sh:/init.sh:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 10s
@@ -86,5 +86,4 @@ services:
         condition: service_healthy
     volumes:
       - ./mimir/mimir.yaml:/etc/mimir.yaml
-      - ./mimir/alertmanager-fallback-config.yaml:/etc/alertmanager-fallback-config.yaml
-      - ./mimir-data:/data
+      - ./volumes/mimir-data:/data
